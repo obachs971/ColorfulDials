@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using KModkit;
 using System.Text.RegularExpressions;
+using KModkit;
+using UnityEngine;
 
-public class digitalDials : MonoBehaviour
+public class colorfulDials : MonoBehaviour
 {
-    public KMAudio audio;
+    public new KMAudio audio;
     public KMBombInfo bomb;
     static int moduleIdCounter = 1;
     int moduleId;
@@ -25,8 +24,13 @@ public class digitalDials : MonoBehaviour
     public MeshRenderer[] dialColors;
     public TextMesh[] dialNumbers;
     public AudioClip[] sounds;
+
+    // Colorblind
+    public KMColorblindMode colorblindMode;
+    public TextMesh[] dialCbTexts;
+
     private string[] mainScreenColors;
-    
+
     private Color[] colorHexs =
         {
             new Color(1f, 0f, 0f),
@@ -98,7 +102,7 @@ public class digitalDials : MonoBehaviour
             int n = UnityEngine.Random.Range(0, colorList.Length);
             clist[aa] = colorList[n].ToUpper();
             colorList = remove(colorList, n);
-            switch(clist[aa])
+            switch (clist[aa])
             {
                 case "RED":
                     buttonColors[aa].material = colors[0];
@@ -136,7 +140,7 @@ public class digitalDials : MonoBehaviour
         colorButtons[6].OnInteract += delegate () { toggleColor(clist[6]); return false; };
         colorButtons[7].OnInteract += delegate () { toggleColor(clist[7]); return false; };
         colorButtons[8].OnInteract += delegate () { toggleColor("BLACK"); return false; };
-        
+
         dialNumColors = new string[3][];
         dialNumColors[0] = new string[10];
         dialNumColors[1] = new string[10];
@@ -148,7 +152,7 @@ public class digitalDials : MonoBehaviour
             dialNumColors[aa / 10][aa % 10] = dialNumCL[n].ToUpper();
         }
         mainScreenColors = new string[3];
-        for(int aa = 0; aa < 3; aa++)
+        for (int aa = 0; aa < 3; aa++)
         {
             int n = UnityEngine.Random.Range(0, 10);
             mainScreen[aa].text = n + "";
@@ -164,12 +168,12 @@ public class digitalDials : MonoBehaviour
             DialVals[aa] = new int[8][];
             DialValColors[aa] = new string[8][];
             DialValMat[aa] = new Color[8][];
-            for(int bb = 0; bb < 8; bb++)
+            for (int bb = 0; bb < 8; bb++)
             {
                 DialVals[aa][bb] = new int[10];
                 DialValColors[aa][bb] = new string[10];
                 DialValMat[aa][bb] = new Color[10];
-                for(int cc = 0; cc < 10; cc++)
+                for (int cc = 0; cc < 10; cc++)
                 {
                     DialVals[aa][bb][cc] = UnityEngine.Random.Range(0, 100);
                     int n = UnityEngine.Random.Range(0, 8);
@@ -182,14 +186,24 @@ public class digitalDials : MonoBehaviour
         dialScreens[1].text = "";
         dialScreens[2].text = "";
         getSolution();
+
+        if (colorblindMode.ColorblindModeActive)
+            ActivateColorblind();
     }
+
+    private void ActivateColorblind()
+    {
+        for (var i = 0; i < 3; i++)
+            dialCbTexts[i].gameObject.SetActive(true);
+    }
+
     string[] remove(string[] c, int n)
     {
         string[] conv = new string[c.Length - 1];
         int items = 0;
         for (int aa = 0; aa < c.Length; aa++)
         {
-            if(aa != n)
+            if (aa != n)
             {
                 conv[items] = c[aa].ToUpper();
                 items++;
@@ -201,14 +215,14 @@ public class digitalDials : MonoBehaviour
     {
         DialPosAns = new int[3];
         DialColAns = new string[3];
-        for(int aa = 0; aa < 3; aa++)
+        for (int aa = 0; aa < 3; aa++)
         {
             Debug.LogFormat("[Colorful Dials #{0}] Main screen digit #{1}: {2} {3}", moduleId, aa + 1, mainScreenColors[aa], mainScreen[aa].text);
             int row = "ROYGCBMP".IndexOf(mainScreenColors[aa][0]);
             int col = 0;
-            for(int bb = 0; bb < 8; bb++)
+            for (int bb = 0; bb < 8; bb++)
             {
-                if(clist[bb].Equals(mainScreenColors[aa]))
+                if (clist[bb].Equals(mainScreenColors[aa]))
                 {
                     Debug.LogFormat("[Colorful Dials #{0}] Position of {1} square: {2}", moduleId, mainScreenColors[aa].ToLower(), bb + 1);
                     col = bb;
@@ -220,7 +234,7 @@ public class digitalDials : MonoBehaviour
             int numTimes = 1;
             for (int bb = 0; bb < 10; bb++)
             {
-                if(dialNumColors[aa][bb].Equals(mainScreenColors[aa]))
+                if (dialNumColors[aa][bb].Equals(mainScreenColors[aa]))
                     numTimes++;
             }
             Debug.LogFormat("[Colorful Dials #{0}] Number of {1} colors: {2}", moduleId, mainScreenColors[aa].ToLower(), numTimes - 1);
@@ -228,9 +242,9 @@ public class digitalDials : MonoBehaviour
             col = -1;
             for (int bb = 0; bb < colorGrid.Length; bb++)
             {
-                for(int cc = 0; cc < colorGrid[bb].Length; cc++)
+                for (int cc = 0; cc < colorGrid[bb].Length; cc++)
                 {
-                    if(colorGrid[bb][cc][1] == mainScreenColors[aa][0] && colorGrid[bb][cc][0] == mainScreen[aa].text[0])
+                    if (colorGrid[bb][cc][1] == mainScreenColors[aa][0] && colorGrid[bb][cc][0] == mainScreen[aa].text[0])
                     {
                         row = bb;
                         col = cc;
@@ -240,7 +254,7 @@ public class digitalDials : MonoBehaviour
                 if (row >= 0)
                     break;
             }
-            switch(cardinal)
+            switch (cardinal)
             {
                 case "N":
                     row -= numTimes;
@@ -379,14 +393,14 @@ public class digitalDials : MonoBehaviour
                     break;
                 case "ORANGE":
                     nums[aa] = (nl - nr) * (nl - nr);
-                    Debug.LogFormat("[Colorful Dials #{0}] Orange {1}: ({2} - {3})squared = {4}", moduleId, num, nl , nr, nums[aa]);
+                    Debug.LogFormat("[Colorful Dials #{0}] Orange {1}: ({2} - {3})squared = {4}", moduleId, num, nl, nr, nums[aa]);
                     break;
                 case "YELLOW":
                     nums[aa] = (nr - nl) * (nr - nl);
                     Debug.LogFormat("[Colorful Dials #{0}] Yellow {1}: ({2} - {3})squared = {4}", moduleId, num, nr, nl, nums[aa]);
                     break;
                 case "GREEN":
-                    nums[aa] = nr  * nl;
+                    nums[aa] = nr * nl;
                     Debug.LogFormat("[Colorful Dials #{0}] Green {1}: {2} * {3} = {4}", moduleId, num, nl, nr, nums[aa]);
                     break;
                 case "CYAN":
@@ -413,7 +427,7 @@ public class digitalDials : MonoBehaviour
         {
             string conv = submitTime + "";
             submitTime = 0;
-            for(int aa = 0; aa < conv.Length; aa++)
+            for (int aa = 0; aa < conv.Length; aa++)
                 submitTime += (conv[aa] - '0');
             Debug.LogFormat("[Colorful Dials #{0}] {1} => {2}", moduleId, conv, submitTime);
         }
@@ -427,7 +441,7 @@ public class digitalDials : MonoBehaviour
     }
     void toggleColor(string c)
     {
-        if(!(moduleSolved))
+        if (!(moduleSolved))
         {
             audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
             toggledColor = c.ToUpper();
@@ -451,18 +465,18 @@ public class digitalDials : MonoBehaviour
     {
         if (!(moduleSolved))
         {
-            if(!(dialColorNames[d].Equals("BLACK")))
+            if (!(dialColorNames[d].Equals("BLACK")))
             {
                 audio.PlaySoundAtTransform(sounds[2].name, transform);
                 DialPos[d] = (DialPos[d] + 1) % 10;
                 dials[d].transform.Rotate(Vector3.up, 36f);
                 getScreen(d, dialColorNames[d][0]);
             }
-            else if(!(toggledColor.Equals("BLACK")))
+            else if (!(toggledColor.Equals("BLACK")))
             {
-                for(int aa = 0; aa < clist.Length; aa++)
+                for (int aa = 0; aa < clist.Length; aa++)
                 {
-                    if(toggledColor.Equals(clist[aa]))
+                    if (toggledColor.Equals(clist[aa]))
                     {
                         audio.PlaySoundAtTransform(sounds[3].name, transform);
                         dialColorNames[d] = clist[aa].ToUpper();
@@ -476,10 +490,7 @@ public class digitalDials : MonoBehaviour
     }
     void getScreen(int d, char c)
     {
-        string display = "" + DialVals[d]["ROYGCBMP".IndexOf(c)][DialPos[d]];
-        if (display.Length < 2)
-            display = "0" + display;
-        dialScreens[d].text = display.ToUpper();
+        dialScreens[d].text = DialVals[d]["ROYGCBMP".IndexOf(c)][DialPos[d]].ToString().PadLeft(2, '0');
         dialScreens[d].color = DialValMat[d]["ROYGCBMP".IndexOf(c)][DialPos[d]];
     }
     void onSubmit()
@@ -488,23 +499,23 @@ public class digitalDials : MonoBehaviour
         {
             submit.AddInteractionPunch();
             audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
-            if ((int)(bomb.GetTime() % 10) == submitTime)
+            if ((int) (bomb.GetTime() % 10) == submitTime)
             {
                 bool flag = true;
-                for(int aa = 0; aa < 3; aa++)
+                for (int aa = 0; aa < 3; aa++)
                 {
-                    if(DialPosAns[aa] != DialPos[aa])
+                    if (DialPosAns[aa] != DialPos[aa])
                     {
                         flag = false;
                         break;
                     }
-                    if(!(DialColAns[aa].Equals(dialColorNames[aa])))
+                    if (!(DialColAns[aa].Equals(dialColorNames[aa])))
                     {
                         flag = false;
                         break;
                     }
                 }
-                if(flag)
+                if (flag)
                 {
                     audio.PlaySoundAtTransform(sounds[1].name, transform);
                     Debug.LogFormat("[Colorful Dials {0}] Module solved. Everybody boogie!", moduleId);
@@ -531,14 +542,14 @@ public class digitalDials : MonoBehaviour
                 {
                     audio.PlaySoundAtTransform(sounds[0].name, transform);
                     module.HandleStrike();
-                    Debug.LogFormat("[Colorful Dials {0}] Strike! You tried to submit {1} {2} {3} at {4} seconds", moduleId, dialColorNames[0][0] + "" + DialPos[0], dialColorNames[1][0] + "" + DialPos[1], dialColorNames[2][0] + "" + DialPos[2], (int)(bomb.GetTime() % 10));
+                    Debug.LogFormat("[Colorful Dials {0}] Strike! You tried to submit {1} {2} {3} at {4} seconds", moduleId, dialColorNames[0][0] + "" + DialPos[0], dialColorNames[1][0] + "" + DialPos[1], dialColorNames[2][0] + "" + DialPos[2], (int) (bomb.GetTime() % 10));
                 }
             }
             else
             {
                 audio.PlaySoundAtTransform(sounds[0].name, transform);
                 module.HandleStrike();
-                Debug.LogFormat("[Colorful Dials {0}] Strike! You tried to submit {1} {2} {3} at {4} seconds", moduleId, dialColorNames[0][0] + "" + DialPos[0], dialColorNames[1][0] + "" + DialPos[1], dialColorNames[2][0] + "" + DialPos[2], (int)(bomb.GetTime() % 10));
+                Debug.LogFormat("[Colorful Dials {0}] Strike! You tried to submit {1} {2} {3} at {4} seconds", moduleId, dialColorNames[0][0] + "" + DialPos[0], dialColorNames[1][0] + "" + DialPos[1], dialColorNames[2][0] + "" + DialPos[2], (int) (bomb.GetTime() % 10));
             }
         }
     }
@@ -554,20 +565,20 @@ public class digitalDials : MonoBehaviour
             {
                 yield return null;
                 int timepress = "0123456789".IndexOf(param[1]);
-                while(((int)(bomb.GetTime())) % 10 != timepress)
+                while (((int) (bomb.GetTime())) % 10 != timepress)
                     yield return "trycancel The button was not pressed due to a request to cancel.";
                 submit.OnInteract();
                 yield return new WaitForSeconds(0.1f);
             }
         }
-        if(Regex.IsMatch(param[0], @"^\s*set\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && param.Length == 4)
+        if (Regex.IsMatch(param[0], @"^\s*set\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && param.Length == 4)
         {
             bool flag = true;
-            for(int aa = 1; aa < param.Length; aa++)
+            for (int aa = 1; aa < param.Length; aa++)
             {
-                if(param[aa].Length != 2)
+                if (param[aa].Length != 2)
                 {
-                    flag = false ;
+                    flag = false;
                     break;
                 }
                 if ("ROYGCBMP".IndexOf(param[aa][0]) < 0 || "0123456789".IndexOf(param[aa][1]) < 0)
@@ -582,9 +593,9 @@ public class digitalDials : MonoBehaviour
                 yield return new WaitForSeconds(0.1f);
                 for (int aa = 1; aa < 4; aa++)
                 {
-                    for(int bb = 0; bb < clist.Length; bb++)
+                    for (int bb = 0; bb < clist.Length; bb++)
                     {
-                        if(clist[bb][0] == param[aa][0])
+                        if (clist[bb][0] == param[aa][0])
                         {
                             colorButtons[bb].OnInteract();
                             yield return new WaitForSeconds(0.1f);
