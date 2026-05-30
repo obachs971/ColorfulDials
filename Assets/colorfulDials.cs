@@ -39,8 +39,8 @@ public class colorfulDials : MonoBehaviour
             new Color(0f, 1f, 0f),
             new Color(0f, 1f, 1f),
             new Color(0f, 0f, 1f),
-            new Color(0.5f, 0f, 0.5f),
-            new Color(1f, 0.5f, 0.9f)
+            new Color(1f, 0f, 1f),
+            new Color(0.4f, 0f, 0.35f)
         };
     private string[][] dialNumColors;
     private int[] DialPos;
@@ -75,7 +75,7 @@ public class colorfulDials : MonoBehaviour
         new string[10]{"5M", "9P", "9R", "7C", "0Y", "8M", "3R", "7M", "3M", "5Y"},
         new string[10]{"4G", "2O", "8P", "7G", "4R", "4B", "6R", "9B", "3P", "5O"},
     };
-    private string[] dialNumCL = { "RED", "ORANGE", "YELLOW", "GREEN", "CYAN", "BLUE", "MAGENTA", "PINK" };
+    private string[] dialNumCL = { "RED", "ORANGE", "YELLOW", "GREEN", "CYAN", "BLUE", "MAGENTA", "PURPLE" };
     void Awake()
     {
         moduleId = moduleIdCounter++;
@@ -96,7 +96,7 @@ public class colorfulDials : MonoBehaviour
         DialPos[1] = 0;
         DialPos[2] = 0;
         clist = new string[9];
-        string[] colorList = { "RED", "ORANGE", "YELLOW", "GREEN", "CYAN", "BLUE", "MAGENTA", "PINK" };
+        string[] colorList = { "RED", "ORANGE", "YELLOW", "GREEN", "CYAN", "BLUE", "MAGENTA", "PURPLE" };
         for (int aa = 0; aa < 8; aa++)
         {
             int n = UnityEngine.Random.Range(0, colorList.Length);
@@ -125,7 +125,7 @@ public class colorfulDials : MonoBehaviour
                 case "MAGENTA":
                     buttonColors[aa].material = colors[6];
                     break;
-                case "PINK":
+                case "PURPLE":
                     buttonColors[aa].material = colors[7];
                     break;
             }
@@ -415,9 +415,9 @@ public class colorfulDials : MonoBehaviour
                     nums[aa] = (num * num) % (nl + 1);
                     Debug.LogFormat("[Colorful Dials #{0}] Magenta {1}: {2} % ({3} + 1) = {4}", moduleId, num, num * num, nl, nums[aa]);
                     break;
-                case "PINK":
+                case "PURPLE":
                     nums[aa] = (num * num) % (nr + 1);
-                    Debug.LogFormat("[Colorful Dials #{0}] Magenta {1}: {2} % ({3} + 1) = {4}", moduleId, num, num * num, nr, nums[aa]);
+                    Debug.LogFormat("[Colorful Dials #{0}] Purple {1}: {2} % ({3} + 1) = {4}", moduleId, num, num * num, nr, nums[aa]);
                     break;
             }
         }
