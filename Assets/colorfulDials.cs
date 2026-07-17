@@ -599,6 +599,8 @@ public class colorfulDials : MonoBehaviour
                         {
                             colorButtons[bb].OnInteract();
                             yield return new WaitForSeconds(0.1f);
+                            dials[aa - 1].OnInteract();
+                            yield return new WaitForSeconds(0.1f);
                             break;
                         }
                     }
